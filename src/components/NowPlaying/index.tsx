@@ -6,6 +6,7 @@ import { IMAGE_URL, IMAGE_WIDTH } from 'src/models/common'
 import { Pagination } from 'src/common/Pagination'
 import { getNowPlayingList } from 'src/utils/api'
 import { QUERY_KEYS } from 'src/utils/keys'
+import { LoadingScreen } from 'src/common/LoadingScreen'
 
 export const NowPlayingScreen = () => {
   const [page, setPage] = useState(1)
@@ -27,6 +28,14 @@ export const NowPlayingScreen = () => {
 
   const onChangePage = (page: number) => {
     setPage(page)
+  }
+
+  if (isNowPlayingLoading) {
+    return (
+      <div className="w-screen h-screen">
+        <LoadingScreen />
+      </div>
+    )
   }
 
   return (

@@ -8,10 +8,12 @@ import { Pagination } from 'src/common/Pagination'
 import { getPopularMovieList, getSearchMulti } from 'src/utils/api'
 import { SearchIcon } from 'src/common/CustomIcons'
 import { QUERY_KEYS } from 'src/utils/keys'
+import { LoadingScreen } from 'src/common/LoadingScreen'
+import { LazyLoadImage } from 'react-lazy-load-image-component'
 
 export const SearchMultiScreen = () => {
   const [page, setPage] = useState<number>(1)
-  const [pagePopular, setPagePopular] = useState<number>(1)
+  const [pagePopular] = useState<number>(1)
   const [keyword, setKeyword] = useState<string>('')
 
   const { data: searchMulti, isLoading: isSearchMultiLoading } = useQuery(
@@ -30,7 +32,7 @@ export const SearchMultiScreen = () => {
     },
   )
 
-  const { data: popularMovie, isLoading: isPopularMovieData } = useQuery(
+  const { data: popularMovie, isLoading: isPopularMovieLoading } = useQuery(
     [QUERY_KEYS.POPULAR_MOVIES_LIST, pagePopular],
     async () => {
       const response = (await getPopularMovieList({ page: pagePopular })) as PopularMovieDataResponse
@@ -59,12 +61,16 @@ export const SearchMultiScreen = () => {
     setPage(page)
   }
 
-  const onChangePagePopular = (page: number) => {
-    setPagePopular(page)
-  }
-
   const onChangeKeyword = (event: { target: { value: string } }) => {
     debounceInput(event.target.value)
+  }
+
+  if (isPopularMovieLoading) {
+    return (
+      <div className="w-screen h-screen">
+        <LoadingScreen />
+      </div>
+    )
   }
 
   return (
@@ -79,24 +85,27 @@ export const SearchMultiScreen = () => {
           <SearchIcon width={20} height={20} color="#FFF" />
         </div>
         {keyword === '' && <div className="mt-[20px] text-[22px]">Popular Movies</div>}
-        <div className="w-full grid grid-cols-4 gap-[20px] mt-[20px]">
-          {searchMulti &&
-            searchMulti.results?.map((item: NowPlayingData, index: number) => (
+        {searchMulti && (
+          <div className="w-full grid grid-cols-4 gap-[20px] mt-[20px]">
+            {searchMulti.results?.map((item: NowPlayingData, index: number) => (
               <div key={index}>
-                <img
+                <LazyLoadImage
+                  effect="blur"
                   src={`${IMAGE_URL}/${IMAGE_WIDTH.W342}/${item.poster_path}`}
-                  className=""
                   alt={item.title ?? item.name ?? 'Image'}
                 />
               </div>
             ))}
+          </div>
+        )}
+        <div className="w-full grid grid-cols-4 gap-[20px] mt-[20px]">
           {popularMovie &&
             popularMovie.results?.map((item: PopularMovieData, index: number) => (
               <div key={index}>
-                <img
+                <LazyLoadImage
                   src={`${IMAGE_URL}/${IMAGE_WIDTH.W342}/${item.poster_path}`}
-                  className=""
                   alt={item.title ?? item.name ?? 'Image'}
+                  effect="blur"
                 />
               </div>
             ))}
@@ -109,17 +118,6 @@ export const SearchMultiScreen = () => {
               totalPages={searchMulti.total_pages}
               totalRecord={searchMulti.total_results}
               onChange={onChangePage}
-            />
-          </div>
-        )}
-        {popularMovie && keyword === '' && (
-          <div className="w-fit mx-auto mt-[20px]">
-            <Pagination
-              currentPage={popularMovie.page}
-              pageSize={popularMovie.total_pages}
-              totalPages={popularMovie.total_pages}
-              totalRecord={popularMovie.total_results}
-              onChange={onChangePagePopular}
             />
           </div>
         )}

@@ -4,7 +4,7 @@ export const Layout = ({ children }: any) => {
   return (
     <div>
       <Header />
-      <div>{children}</div>
+      <div className="mt-[100px]">{children}</div>
     </div>
   )
 }

@@ -1,5 +1,6 @@
 import dayjs from 'dayjs'
 import utc from 'dayjs/plugin/utc'
+import { LazyLoadImage } from 'react-lazy-load-image-component'
 import { useQuery } from '@tanstack/react-query'
 import { Layout } from '..'
 import Slider from 'react-slick'
@@ -9,6 +10,7 @@ import { NowPlayingData, NowPlayingDataResponse, TrendListData, TrendListDataRes
 import { Geners, IMAGE_URL, IMAGE_WIDTH } from 'src/models/common'
 import { useState } from 'react'
 import { Link } from 'react-router-dom'
+import { LoadingScreen } from 'src/common/LoadingScreen'
 
 dayjs.extend(utc)
 
@@ -88,7 +90,14 @@ export const HomeScreen = () => {
     },
   )
 
-  console.log(nowPlayingList)
+  if (isNowPlayingLoading || isTrendListLoading) {
+    return (
+      <div className="w-screen h-screen">
+        <LoadingScreen />
+      </div>
+    )
+  }
+
   return (
     <Layout>
       <div className="container lg:w-[1100px] mt-[30px] mx-auto h-[400px]">
@@ -97,11 +106,15 @@ export const HomeScreen = () => {
             {trend_list?.map((item: TrendListData, index: number) => (
               <div className={`w-full h-[400px]`} key={index}>
                 <div className="absolute w-full h-full bg-[#00000074] z-10" />
-                <img
+
+                <LazyLoadImage
                   src={`${IMAGE_URL}/${IMAGE_WIDTH.ORIGINAL}/${item.poster_path}`}
-                  className="object-cover h-full w-full absolute top-0 left-0 z-1"
+                  height={400}
+                  effect="blur"
+                  wrapperClassName="object-cover w-full absolute top-0 left-0 z-1"
                   alt={item.title ?? item.name ?? 'Image'}
                 />
+
                 <div className="text-[#FFFFFF] absolute bottom-[40px] left-[20px] z-100">
                   <p className="text-[42px] font-semibold">{item.title ?? item.name}</p>
                   <div className="flex gap-[10px] items-center">
@@ -133,9 +146,10 @@ export const HomeScreen = () => {
               {nowPlayingList?.map((item: NowPlayingData, index: number) => (
                 <div className={`w-full h-[200px] relative`} key={index}>
                   {/* <div className="absolute w-full h-full bg-[#00000074] z-10" /> */}
-                  <img
+                  <LazyLoadImage
                     src={`${IMAGE_URL}/${IMAGE_WIDTH.W342}/${item.poster_path}`}
-                    className="object-cover h-[150px] w-[95%] mx-auto"
+                    height={150}
+                    effect="blur"
                     alt={item.title ?? item.name ?? 'Image'}
                   />
                   <div className="text-[#000] w-full">
@@ -146,8 +160,6 @@ export const HomeScreen = () => {
             </Slider>
           </div>
         )}
-
-        
       </div>
     </Layout>
   )

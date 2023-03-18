@@ -1,4 +1,9 @@
-import { NowPlayingDataResponse, TopRatedDataResponse, TrendListDataResponse } from 'src/models/api'
+import {
+  NowPlayingDataResponse,
+  PopularMovieDataResponse,
+  TopRatedDataResponse,
+  TrendListDataResponse,
+} from 'src/models/api'
 import { TREND_TIME_TYPE, TREND_TYPE } from 'src/models/common'
 
 export const API_BASE_URL = process.env.API_BASE_URL ?? 'https://api.themoviedb.org/3'
@@ -119,7 +124,7 @@ export const getPopularMovieList = async (input: { page: number }) => {
       method: 'GET',
     })
 
-    const rawResponse = (await response.json()) as TrendListDataResponse
+    const rawResponse = (await response.json()) as PopularMovieDataResponse
 
     if (rawResponse) {
       return rawResponse

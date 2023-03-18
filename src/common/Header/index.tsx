@@ -5,7 +5,7 @@ import { SearchIcon } from '../CustomIcons'
 
 export const Header = () => {
   return (
-    <div className="w-full bg-[#000]">
+    <div className="w-full fixed top-0 left-0 bg-[#000] z-100">
       <div className="container md:w-[1100px] flex justify-between mx-auto items-center h-[50px]">
         <Link to={'/'} className="text-[#FFFFFF]">
           Movie
